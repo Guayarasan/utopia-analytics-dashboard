@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: utopia_analytics
+      MYSQL_USER: utopia_analytics
+      MYSQL_PASSWORD: utopia_analytics
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Todo .sql en docker-entrypoint-initdb.d se aplica UNA sola vez,
+      # la primera vez que se crea el volumen — así el esquema queda
+      # listo sin correr nada a mano.
+      - ./docker/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: dev-secret-cambiar-en-produccion
+      DATABASE_URL: mysql+pymysql://utopia_analytics:utopia_analytics@mysql:3306/utopia_analytics
+      CACHE_TYPE: SimpleCache
+
+  # Corre el job de rachas/Activity Score/alertas cada 5 minutos, para
+  # no tener que ejecutarlo a mano mientras se prueba en local. En
+  # producción esto lo reemplaza el Render Cron Job (ver render.yaml).
+  stats-scheduler:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://utopia_analytics:utopia_analytics@mysql:3306/utopia_analytics
+    entrypoint: >
+      sh -c "while true; do flask --app wsgi refresh-stats; sleep 300; done"
+
+volumes:
+  mysql_data:

@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: utopia-analytics-dashboard
+    env: python
+    plan: starter
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn wsgi:app"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: CACHE_TYPE
+        value: SimpleCache
+
+  - type: cron
+    name: utopia-analytics-refresh-stats
+    env: python
+    plan: starter
+    schedule: "*/5 * * * *"
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "flask --app wsgi refresh-stats"
+    envVars:
+      - key: DATABASE_URL
+        sync: false

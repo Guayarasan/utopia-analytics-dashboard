@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Rankings — Utopia Analytics{% endblock %}
+
+{% block extra_head %}
+<style>
+    .ua-ranking-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .ua-rank-pos { font-family: var(--font-mono); color: var(--text-tertiary); width: 28px; display: inline-block; }
+    .ua-rank-pos.top3 { color: var(--accent-gold); font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="ua-page-title">Rankings</h1>
+<p class="ua-page-subtitle">Top 50 por categoría.</p>
+
+<div class="ua-ranking-tabs">
+    {% for key, spec in ranking_types.items() %}
+        <a href="{{ url_for('rankings.index', type=key) }}" class="ua-tab {% if key == ranking_type %}active{% endif %}" style="text-decoration:none; display:inline-block;">{{ spec.label }}</a>
+    {% endfor %}
+</div>
+
+<div class="ua-card">
+    <div class="ua-list">
+        {% for player in players %}
+            <div class="ua-list-row">
+                <span>
+                    <span class="ua-rank-pos {% if loop.index <= 3 %}top3{% endif %}">#{{ loop.index }}</span>
+                    <a href="{{ url_for('players.profile', uuid=player.uuid) }}" class="ua-list-name">{{ player.username }}</a>
+                </span>
+                <span class="ua-list-meta">
+                    {% if ranking_type == 'hours' %}{{ player.total_playtime_hours }}h
+                    {% elif ranking_type == 'streaks' %}{{ player.current_streak_days }} días
+                    {% elif ranking_type == 'afk' %}{{ (player.total_afk_seconds / 3600) | round(1) }}h AFK
+                    {% elif ranking_type in ['veterans', 'new'] %}{{ player.first_seen.strftime('%d/%m/%Y') }}
+                    {% elif ranking_type in ['most_active', 'most_inactive'] %}{{ player.last_seen.strftime('%d/%m/%Y') }}
+                    {% else %}Score {{ player.activity_score }}
+                    {% endif %}
+                </span>
+            </div>
+        {% else %}
+            <div class="ua-empty">Todavía no hay datos suficientes para este ranking.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

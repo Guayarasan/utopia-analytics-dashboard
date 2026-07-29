@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Alertas — Utopia Analytics{% endblock %}
+
+{% block content %}
+<h1 class="ua-page-title">Alertas</h1>
+<p class="ua-page-subtitle">Eventos que ameritan revisión: inactividad, regresos y récords.</p>
+
+<div class="ua-ranking-tabs" style="margin-bottom:20px;">
+    <a href="{{ url_for('alerts.index', show='unread') }}" class="ua-tab {% if show == 'unread' %}active{% endif %}" style="text-decoration:none;">No leídas</a>
+    <a href="{{ url_for('alerts.index', show='all') }}" class="ua-tab {% if show == 'all' %}active{% endif %}" style="text-decoration:none;">Todas</a>
+</div>
+
+<div class="ua-card">
+    <div class="ua-list">
+        {% for alert in alerts %}
+            <div class="ua-list-row">
+                <span>
+                    {% if not alert.is_read %}<span class="ua-kpi-dot redstone" style="display:inline-block;margin-right:8px;"></span>{% endif %}
+                    {{ alert.message }}
+                </span>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="ua-list-meta">{{ alert.triggered_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    {% if not alert.is_read %}
+                        <form method="post" action="{{ url_for('alerts.mark_read', alert_id=alert.id, show=show) }}">
+                            <button type="submit" class="ua-tab" style="cursor:pointer;">Marcar leída</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="ua-empty">No hay alertas {% if show == 'unread' %}pendientes{% endif %}.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

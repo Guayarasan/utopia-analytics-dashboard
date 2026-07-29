@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Comparador — Utopia Analytics{% endblock %}
+
+{% block extra_head %}
+<style>
+    .ua-compare-picker { position: relative; }
+    .ua-autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-raised); border: 1px solid var(--border); border-radius: 8px; z-index: 10; max-height: 220px; overflow-y: auto; display: none; }
+    .ua-autocomplete-item { padding: 8px 12px; font-size: 14px; cursor: pointer; }
+    .ua-autocomplete-item:hover { background: var(--bg); color: var(--accent-diamond); }
+    .ua-compare-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .ua-compare-row:last-child { border-bottom: none; }
+    .ua-compare-metric { color: var(--text-secondary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="ua-page-title">Comparador</h1>
+<p class="ua-page-subtitle">Elegí dos jugadores para comparar su actividad.</p>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="ua-compare-picker">
+            <input type="text" class="ua-input" id="search-a" placeholder="Buscar jugador A..."
+                   value="{{ player_a.username if player_a else '' }}">
+            <div class="ua-autocomplete" id="autocomplete-a"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="ua-compare-picker">
+            <input type="text" class="ua-input" id="search-b" placeholder="Buscar jugador B..."
+                   value="{{ player_b.username if player_b else '' }}">
+            <div class="ua-autocomplete" id="autocomplete-b"></div>
+        </div>
+    </div>
+</div>
+
+{% if player_a and player_b %}
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="ua-card">
+            <h2 class="ua-panel-title">{{ player_a.username }} vs {{ player_b.username }}</h2>
+            <div class="ua-chart-wrap" style="height:300px">
+                <canvas id="compareChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="ua-card">
+            <h2 class="ua-panel-title">Detalle</h2>
+            <div class="ua-compare-row">
+                <span>{{ player_a.total_playtime_hours }}h</span>
+                <span class="ua-compare-metric">Horas totales</span>
+                <span>{{ player_b.total_playtime_hours }}h</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ player_a.activity_score }}</span>
+                <span class="ua-compare-metric">Activity Score</span>
+                <span>{{ player_b.activity_score }}</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ player_a.current_streak_days }} días</span>
+                <span class="ua-compare-metric">Racha actual</span>
+                <span>{{ player_b.current_streak_days }} días</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ player_a.game_stats.deaths if player_a.game_stats else 0 }}</span>
+                <span class="ua-compare-metric">Muertes</span>
+                <span>{{ player_b.game_stats.deaths if player_b.game_stats else 0 }}</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ player_a.game_stats.blocks_placed if player_a.game_stats else 0 }}</span>
+                <span class="ua-compare-metric">Bloques colocados</span>
+                <span>{{ player_b.game_stats.blocks_placed if player_b.game_stats else 0 }}</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ ((player_a.game_stats.distance_traveled_cm if player_a.game_stats else 0) / 100000) | round(1) }} km</span>
+                <span class="ua-compare-metric">Distancia recorrida</span>
+                <span>{{ ((player_b.game_stats.distance_traveled_cm if player_b.game_stats else 0) / 100000) | round(1) }} km</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ player_a.last_seen.strftime('%d/%m/%Y') }}</span>
+                <span class="ua-compare-metric">Última conexión</span>
+                <span>{{ player_b.last_seen.strftime('%d/%m/%Y') }}</span>
+            </div>
+            <div class="ua-compare-row">
+                <span>{{ player_a.first_seen.strftime('%d/%m/%Y') }}</span>
+                <span class="ua-compare-metric">Primer ingreso</span>
+                <span>{{ player_b.first_seen.strftime('%d/%m/%Y') }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.UA_COMPARE_DATA = {
+        labels: ["Horas", "Activity Score", "Racha actual", "Muertes (inv.)", "Bloques", "Distancia"],
+        a: [
+            {{ player_a.total_playtime_hours }},
+            {{ player_a.activity_score }},
+            {{ player_a.current_streak_days }},
+            {{ player_a.game_stats.deaths if player_a.game_stats else 0 }},
+            {{ player_a.game_stats.blocks_placed if player_a.game_stats else 0 }},
+            {{ ((player_a.game_stats.distance_traveled_cm if player_a.game_stats else 0) / 100000) | round(1) }}
+        ],
+        b: [
+            {{ player_b.total_playtime_hours }},
+            {{ player_b.activity_score }},
+            {{ player_b.current_streak_days }},
+            {{ player_b.game_stats.deaths if player_b.game_stats else 0 }},
+            {{ player_b.game_stats.blocks_placed if player_b.game_stats else 0 }},
+            {{ ((player_b.game_stats.distance_traveled_cm if player_b.game_stats else 0) / 100000) | round(1) }}
+        ],
+        name_a: "{{ player_a.username }}",
+        name_b: "{{ player_b.username }}"
+    };
+</script>
+{% else %}
+<div class="ua-card">
+    <div class="ua-empty">Elegí dos jugadores arriba para ver la comparación.</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+{% endblock %}

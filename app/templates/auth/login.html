@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión — Utopia Analytics{% endblock %}
+
+{% block content %}
+<div class="ua-card ua-form-card">
+    <h1 class="ua-page-title" style="font-size:20px">Iniciar sesión</h1>
+    <p class="ua-page-subtitle" style="margin-bottom:20px">Accede con tu cuenta del panel.</p>
+    <form method="post">
+        <input class="ua-input" type="text" name="username" placeholder="Usuario" required autofocus>
+        <input class="ua-input" type="password" name="password" placeholder="Contraseña" required>
+        <button class="ua-btn w-100" type="submit">Entrar</button>
+    </form>
+</div>
+{% endblock %}

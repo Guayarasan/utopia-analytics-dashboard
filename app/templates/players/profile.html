@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ player.username }} — Utopia Analytics{% endblock %}
+
+{% block content %}
+<h1 class="ua-page-title">{{ player.username }}</h1>
+<p class="ua-page-subtitle">
+    <span class="ua-badge ua-badge-{{ player.status }}">{{ player.status }}</span>
+    · UUID <span class="ua-list-meta">{{ player.uuid }}</span>
+</p>
+
+<div class="ua-kpi-grid">
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot gold"></span>Activity Score</div>
+        <div class="ua-kpi-value">{{ player.activity_score }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Horas totales</div>
+        <div class="ua-kpi-value">{{ player.total_playtime_hours }}<span class="unit">h</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot emerald"></span>Racha actual</div>
+        <div class="ua-kpi-value">{{ player.current_streak_days }}<span class="unit">días</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot gold"></span>Mayor racha</div>
+        <div class="ua-kpi-value">{{ player.best_streak_days }}<span class="unit">días</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Primera conexión</div>
+        <div class="ua-kpi-value" style="font-size:16px">{{ player.first_seen.strftime('%d/%m/%Y') }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Última conexión</div>
+        <div class="ua-kpi-value" style="font-size:16px">{{ player.last_seen.strftime('%d/%m/%Y %H:%M') }}</div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="ua-card">
+            <h2 class="ua-panel-title">Sesiones recientes</h2>
+            <div class="ua-list">
+                {% for session in recent_sessions %}
+                    <div class="ua-list-row">
+                        <span>{{ session.connected_at.strftime('%d/%m %H:%M') }}</span>
+                        <span class="ua-list-meta">
+                            {% if session.duration_seconds %}{{ (session.duration_seconds / 60) | round | int }} min{% else %}en curso{% endif %}
+                        </span>
+                    </div>
+                {% else %}
+                    <div class="ua-empty">Sin sesiones registradas todavía.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="ua-card">
+            <h2 class="ua-panel-title">Timeline</h2>
+            <div class="ua-list">
+                {% for event in timeline %}
+                    <div class="ua-list-row">
+                        <span>{{ event.event_type }}</span>
+                        <span class="ua-list-meta">{{ event.occurred_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                {% else %}
+                    <div class="ua-empty">Sin eventos registrados todavía.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ua-card mt-3">
+    <h2 class="ua-panel-title">Logros</h2>
+    <div class="ua-list">
+        {% for pa in player.achievements %}
+            <div class="ua-list-row">
+                <span>{{ pa.achievement.name }}</span>
+                <span class="ua-list-meta">{{ pa.unlocked_at.strftime('%d/%m/%Y') }}</span>
+            </div>
+        {% else %}
+            <div class="ua-empty">Todavía no desbloqueó logros.</div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="ua-card mt-3">
+    <h2 class="ua-panel-title">Notas administrativas</h2>
+    <div class="ua-list">
+        {% for note in notes %}
+            <div class="ua-list-row">
+                <span>{{ note.note }}</span>
+                <span class="ua-list-meta">{{ note.created_at.strftime('%d/%m/%Y') }}</span>
+            </div>
+        {% else %}
+            <div class="ua-empty">Sin notas todavía.</div>
+        {% endfor %}
+    </div>
+    {% if current_user.is_authenticated and current_user.role in ['admin', 'moderator'] %}
+        <form method="post" action="{{ url_for('players.add_note', uuid=player.uuid) }}" class="mt-3 d-flex gap-2">
+            <input type="text" name="note" class="ua-input" style="margin-bottom:0" placeholder="Agregar nota..." required>
+            <button type="submit" class="ua-btn">Agregar</button>
+        </form>
+    {% endif %}
+</div>
+
+{% if current_user.is_authenticated and current_user.role == 'admin' %}
+<div class="ua-card mt-3">
+    <h2 class="ua-panel-title">Cambiar estado</h2>
+    <form method="post" action="{{ url_for('players.change_status', uuid=player.uuid) }}" class="d-flex gap-2">
+        <select name="status" class="ua-input" style="margin-bottom:0">
+            {% for value, label in [('active','Activo'), ('inactive','Inactivo'), ('suspended','Suspendido'), ('archived','Archivado'), ('banned','Baneado')] %}
+                <option value="{{ value }}" {% if player.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="ua-btn">Guardar</button>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

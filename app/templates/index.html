@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Resumen — Utopia Analytics{% endblock %}
+
+{% block content %}
+<h1 class="ua-page-title">Resumen</h1>
+<p class="ua-page-subtitle">Estado general del servidor, actualizado cada pocos minutos.</p>
+
+<div class="ua-kpi-grid">
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot emerald"></span>Conectados ahora</div>
+        <div class="ua-kpi-value">{{ stats.players_online }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Activos hoy</div>
+        <div class="ua-kpi-value">{{ stats.active_today }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Activos esta semana</div>
+        <div class="ua-kpi-value">{{ stats.active_this_week }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Activos este mes</div>
+        <div class="ua-kpi-value">{{ stats.active_this_month }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot gold"></span>Horas jugadas hoy</div>
+        <div class="ua-kpi-value">{{ stats.hours_played_today }}<span class="unit">h</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot gold"></span>Horas jugadas este mes</div>
+        <div class="ua-kpi-value">{{ stats.hours_played_month }}<span class="unit">h</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Promedio diario</div>
+        <div class="ua-kpi-value">{{ stats.avg_daily_hours }}<span class="unit">h</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Promedio semanal</div>
+        <div class="ua-kpi-value">{{ stats.avg_weekly_hours }}<span class="unit">h</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Promedio mensual</div>
+        <div class="ua-kpi-value">{{ stats.avg_monthly_hours }}<span class="unit">h</span></div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot gold"></span>Activity Score promedio</div>
+        <div class="ua-kpi-value">{{ stats.avg_activity_score }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot gold"></span>Suspendidos</div>
+        <div class="ua-kpi-value">{{ stats.suspended_count }}</div>
+    </div>
+    <div class="ua-card">
+        <div class="ua-kpi-label"><span class="ua-kpi-dot redstone"></span>Archivados</div>
+        <div class="ua-kpi-value">{{ stats.archived_count }}</div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="ua-card">
+            <h2 class="ua-panel-title">Últimos jugadores conectados</h2>
+            <div class="ua-list">
+                {% for player in recent_connections %}
+                    <div class="ua-list-row">
+                        <a href="{{ url_for('players.profile', uuid=player.uuid) }}" class="ua-list-name">{{ player.username }}</a>
+                        <span class="ua-list-meta">{{ player.last_seen.strftime('%d/%m %H:%M') }}</span>
+                    </div>
+                {% else %}
+                    <div class="ua-empty">Todavía no hay conexiones registradas.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="ua-card">
+            <h2 class="ua-panel-title">Últimos jugadores registrados</h2>
+            <div class="ua-list">
+                {% for player in recent_registrations %}
+                    <div class="ua-list-row">
+                        <a href="{{ url_for('players.profile', uuid=player.uuid) }}" class="ua-list-name">{{ player.username }}</a>
+                        <span class="ua-list-meta">{{ player.first_seen.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                {% else %}
+                    <div class="ua-empty">Todavía no hay jugadores registrados.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
