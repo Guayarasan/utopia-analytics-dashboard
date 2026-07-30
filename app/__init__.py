@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from sqlalchemy.exc import ProgrammingError, OperationalError
 
 from .config import Config
 from .extensions import db, login_manager, cache
@@ -64,5 +65,27 @@ def create_app(config_class: type = Config) -> Flask:
     @app.errorhandler(403)
     def forbidden(_e):
         return render_template("errors/403.html"), 403
+
+    @app.errorhandler(ProgrammingError)
+    @app.errorhandler(OperationalError)
+    def database_not_ready(error):
+        # Deja la sesión limpia para el próximo request — si no se
+        # revierte, SQLAlchemy sigue arrastrando el error en la misma
+        # conexión y todo lo demás también empieza a fallar.
+        db.session.rollback()
+
+        # 1146 = "Table '...' doesn't exist" (MySQL/pymysql). Cualquier
+        # otro código lo tratamos como "no se pudo conectar" — mismo
+        # mensaje al usuario, pero nos sirve para el log del servidor.
+        orig_args = getattr(getattr(error, "orig", None), "args", ())
+        is_missing_table = bool(orig_args) and orig_args[0] == 1146
+
+        app.logger.warning(f"[UtopiaAnalytics] Base de datos no lista: {error}")
+        return (
+            render_template(
+                "errors/not_initialized.html", is_missing_table=is_missing_table
+            ),
+            503,
+        )
 
     return app

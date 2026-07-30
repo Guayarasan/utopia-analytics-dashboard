@@ -6,6 +6,22 @@ lo estrictamente necesario para pintar la página: los totales de la
 portada vienen de `global_stats_cache`, nunca de un `COUNT`/`SUM` al
 vuelo sobre toda la tabla de sesiones.
 
+## Inicialización automática del esquema
+
+No hace falta correr `docker/schema.sql` a mano en producción: el
+**plugin de Minecraft** crea las 13 tablas automáticamente la primera
+vez que se conecta a MySQL (`CREATE TABLE IF NOT EXISTS`). Si abrís
+el dashboard antes de que el plugin haya arrancado al menos una vez,
+en vez de un error 500 vas a ver una página explicando que el
+proyecto todavía se está inicializando, con un botón para reintentar.
+Lo mismo si MySQL directamente no es alcanzable — mensaje distinto,
+misma página amigable, sin stack traces.
+
+`docker/schema.sql` sigue estando para dos casos: levantar todo con
+Docker Compose (que lo aplica solo, ver más abajo) y como fallback
+manual si el usuario de MySQL del plugin no tiene permiso
+`CREATE TABLE`.
+
 ## Correr todo local con Docker (recomendado para probar de punta a punta)
 
 ```bash

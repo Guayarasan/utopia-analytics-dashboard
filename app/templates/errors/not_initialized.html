@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurando Utopia Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div style="max-width: 560px; margin: 15vh auto; padding: 0 20px;">
+        <div class="ua-card" style="text-align: left;">
+            <h1 class="ua-page-title" style="font-size: 20px;">
+                {% if is_missing_table %}
+                    El proyecto todavía no fue inicializado
+                {% else %}
+                    No se pudo conectar a la base de datos
+                {% endif %}
+            </h1>
+
+            {% if is_missing_table %}
+                <p class="ua-page-subtitle" style="margin-bottom: 16px;">
+                    El dashboard se conectó a MySQL sin problema, pero
+                    todavía no existen las tablas que necesita.
+                </p>
+                <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                    Esto se soluciona solo apenas el <strong>plugin</strong>
+                    de Minecraft se conecte por primera vez a esta misma
+                    base de datos — crea las tablas automáticamente. Si el
+                    plugin todavía no arrancó, iniciá el servidor de
+                    Minecraft una vez y volvé a cargar esta página.
+                </p>
+                <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                    Si el usuario de MySQL del plugin no tiene permiso
+                    <code>CREATE TABLE</code>, vas a ver un warning en la
+                    consola del servidor — en ese caso aplicá
+                    <code>docker/schema.sql</code> a mano una vez.
+                </p>
+            {% else %}
+                <p class="ua-page-subtitle" style="margin-bottom: 16px;">
+                    El dashboard no pudo conectarse a MySQL. Revisá que
+                    <code>DATABASE_URL</code> apunte a un servidor
+                    accesible y que las credenciales sean correctas.
+                </p>
+            {% endif %}
+
+            <button onclick="window.location.reload()" class="ua-btn" style="margin-top: 8px;">
+                Reintentar
+            </button>
+        </div>
+    </div>
+</body>
+</html>
