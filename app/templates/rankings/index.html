@@ -31,8 +31,8 @@
                     {% if ranking_type == 'hours' %}{{ player.total_playtime_hours }}h
                     {% elif ranking_type == 'streaks' %}{{ player.current_streak_days }} días
                     {% elif ranking_type == 'afk' %}{{ (player.total_afk_seconds / 3600) | round(1) }}h AFK
-                    {% elif ranking_type in ['veterans', 'new'] %}{{ player.first_seen.strftime('%d/%m/%Y') }}
-                    {% elif ranking_type in ['most_active', 'most_inactive'] %}{{ player.last_seen.strftime('%d/%m/%Y') }}
+                    {% elif ranking_type in ['veterans', 'new'] %}{{ (player.first_seen | local).strftime('%d/%m/%Y') }}
+                    {% elif ranking_type in ['most_active', 'most_inactive'] %}{{ (player.last_seen | local).strftime('%d/%m/%Y') }}
                     {% else %}Score {{ player.activity_score }}
                     {% endif %}
                 </span>

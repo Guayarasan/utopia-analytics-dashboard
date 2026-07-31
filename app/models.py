@@ -9,7 +9,7 @@ class Player(db.Model):
     uuid = db.Column(db.String(36), primary_key=True)
     username = db.Column(db.String(16), nullable=False, index=True)
     status = db.Column(
-        db.Enum("active", "inactive", "suspended", "archived", "banned"),
+        db.Enum("active", "inactive", "dormant", "suspended", "archived", "banned"),
         nullable=False,
         default="active",
         index=True,

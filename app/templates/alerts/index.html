@@ -19,7 +19,7 @@
                     {{ alert.message }}
                 </span>
                 <div class="d-flex align-items-center gap-3">
-                    <span class="ua-list-meta">{{ alert.triggered_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    <span class="ua-list-meta">{{ (alert.triggered_at | local).strftime('%d/%m/%Y %H:%M') }}</span>
                     {% if not alert.is_read %}
                         <form method="post" action="{{ url_for('alerts.mark_read', alert_id=alert.id, show=show) }}">
                             <button type="submit" class="ua-tab" style="cursor:pointer;">Marcar leída</button>

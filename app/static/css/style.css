@@ -230,6 +230,7 @@ a:hover { color: #7fe4ee; }
 }
 .ua-badge-active { background: rgba(63, 203, 110, 0.14); color: var(--accent-emerald); }
 .ua-badge-inactive { background: rgba(139, 146, 163, 0.14); color: var(--text-secondary); }
+.ua-badge-dormant { background: rgba(77, 216, 230, 0.10); color: var(--text-tertiary); }
 .ua-badge-suspended { background: rgba(230, 184, 63, 0.14); color: var(--accent-gold); }
 .ua-badge-archived { background: rgba(139, 146, 163, 0.1); color: var(--text-tertiary); }
 .ua-badge-banned { background: rgba(230, 84, 75, 0.14); color: var(--accent-redstone); }

@@ -4,7 +4,7 @@ from ...models import Player
 
 rankings_bp = Blueprint("rankings", __name__)
 
-# Cada tipo de ranking: (etiqueta, columna de orden, dirección, filtro de estado opcional)
+# Cada tipo de ranking: (etiqueta, orden, lista opcional de estados a incluir)
 RANKING_TYPES = {
     "activity": {"label": "Top actividad", "order": lambda: Player.activity_score.desc()},
     "hours": {"label": "Top horas", "order": lambda: Player.total_playtime_seconds.desc()},
@@ -14,12 +14,12 @@ RANKING_TYPES = {
     "most_active": {
         "label": "Top jugadores activos",
         "order": lambda: Player.last_seen.desc(),
-        "status": "active",
+        "statuses": ["active"],
     },
     "most_inactive": {
-        "label": "Top jugadores inactivos",
+        "label": "Top jugadores inactivos/dormidos",
         "order": lambda: Player.last_seen.asc(),
-        "status": "inactive",
+        "statuses": ["inactive", "dormant"],
     },
     "afk": {"label": "Top tiempo AFK", "order": lambda: Player.total_afk_seconds.desc()},
 }
@@ -33,8 +33,8 @@ def index():
 
     spec = RANKING_TYPES[ranking_type]
     query = Player.query
-    if "status" in spec:
-        query = query.filter(Player.status == spec["status"])
+    if "statuses" in spec:
+        query = query.filter(Player.status.in_(spec["statuses"]))
 
     players = query.order_by(spec["order"]()).limit(50).all()
 

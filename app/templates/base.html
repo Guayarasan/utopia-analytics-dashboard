@@ -28,6 +28,7 @@
                 <a href="{{ url_for('alerts.index') }}" class="ua-nav-link {% if request.endpoint and request.endpoint.startswith('alerts.') %}active{% endif %}">Alertas</a>
             </nav>
             <div class="ua-sidebar-footer">
+                <span class="ua-user" style="opacity:0.6;">Hora: Bogotá (UTC-5)</span>
                 {% if current_user.is_authenticated %}
                     <span class="ua-user">{{ current_user.username }}</span>
                     <a href="{{ url_for('auth.logout') }}" class="ua-nav-link small">Cerrar sesión</a>

@@ -32,3 +32,16 @@ class Config:
     # Cuánto tiempo se considera "vivo" un jugador conectado sin señales
     # nuevas del plugin (ver player_sessions.disconnected_at IS NULL).
     ONLINE_THRESHOLD_MINUTES = int(os.environ.get("ONLINE_THRESHOLD_MINUTES", 5))
+
+    # Corre flask refresh-stats (rachas, Activity Score, estados
+    # automáticos, alertas, logros, global_stats_cache) dentro del
+    # propio proceso del dashboard — ver app/scheduler.py. Desactivar
+    # solo si corrés varios workers/instancias y preferís el cron
+    # externo de render.yaml.
+    ENABLE_INTERNAL_SCHEDULER = os.environ.get("ENABLE_INTERNAL_SCHEDULER", "true").lower() == "true"
+    REFRESH_STATS_INTERVAL_MINUTES = int(os.environ.get("REFRESH_STATS_INTERVAL_MINUTES", 5))
+
+    # Zona horaria SOLO para mostrar fechas/horas en el dashboard — todo
+    # se guarda en UTC en la base (ver nota en utils/timezones.py). No
+    # afecta cálculos, solo el texto que ve el administrador.
+    DISPLAY_TIMEZONE = os.environ.get("DISPLAY_TIMEZONE", "America/Bogota")

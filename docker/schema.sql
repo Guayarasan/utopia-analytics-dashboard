@@ -36,7 +36,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE players (
     uuid                    CHAR(36)        NOT NULL,
     username                VARCHAR(16)     NOT NULL,
-    status                  ENUM('active','inactive','suspended','archived','banned')
+    status                  ENUM('active','inactive','dormant','suspended','archived','banned')
                                             NOT NULL DEFAULT 'active',
 
     first_seen              DATETIME        NOT NULL,

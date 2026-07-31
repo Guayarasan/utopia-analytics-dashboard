@@ -27,11 +27,11 @@
     </div>
     <div class="ua-card">
         <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Primera conexión</div>
-        <div class="ua-kpi-value" style="font-size:16px">{{ player.first_seen.strftime('%d/%m/%Y') }}</div>
+        <div class="ua-kpi-value" style="font-size:16px">{{ (player.first_seen | local).strftime('%d/%m/%Y') }}</div>
     </div>
     <div class="ua-card">
         <div class="ua-kpi-label"><span class="ua-kpi-dot diamond"></span>Última conexión</div>
-        <div class="ua-kpi-value" style="font-size:16px">{{ player.last_seen.strftime('%d/%m/%Y %H:%M') }}</div>
+        <div class="ua-kpi-value" style="font-size:16px">{{ (player.last_seen | local).strftime('%d/%m/%Y %H:%M') }}</div>
     </div>
 </div>
 
@@ -42,7 +42,7 @@
             <div class="ua-list">
                 {% for session in recent_sessions %}
                     <div class="ua-list-row">
-                        <span>{{ session.connected_at.strftime('%d/%m %H:%M') }}</span>
+                        <span>{{ (session.connected_at | local).strftime('%d/%m %H:%M') }}</span>
                         <span class="ua-list-meta">
                             {% if session.duration_seconds %}{{ (session.duration_seconds / 60) | round | int }} min{% else %}en curso{% endif %}
                         </span>
@@ -60,7 +60,7 @@
                 {% for event in timeline %}
                     <div class="ua-list-row">
                         <span>{{ event.event_type }}</span>
-                        <span class="ua-list-meta">{{ event.occurred_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        <span class="ua-list-meta">{{ (event.occurred_at | local).strftime('%d/%m/%Y %H:%M') }}</span>
                     </div>
                 {% else %}
                     <div class="ua-empty">Sin eventos registrados todavía.</div>
@@ -76,7 +76,7 @@
         {% for pa in player.achievements %}
             <div class="ua-list-row">
                 <span>{{ pa.achievement.name }}</span>
-                <span class="ua-list-meta">{{ pa.unlocked_at.strftime('%d/%m/%Y') }}</span>
+                <span class="ua-list-meta">{{ (pa.unlocked_at | local).strftime('%d/%m/%Y') }}</span>
             </div>
         {% else %}
             <div class="ua-empty">Todavía no desbloqueó logros.</div>
@@ -90,7 +90,7 @@
         {% for note in notes %}
             <div class="ua-list-row">
                 <span>{{ note.note }}</span>
-                <span class="ua-list-meta">{{ note.created_at.strftime('%d/%m/%Y') }}</span>
+                <span class="ua-list-meta">{{ (note.created_at | local).strftime('%d/%m/%Y') }}</span>
             </div>
         {% else %}
             <div class="ua-empty">Sin notas todavía.</div>
@@ -109,7 +109,7 @@
     <h2 class="ua-panel-title">Cambiar estado</h2>
     <form method="post" action="{{ url_for('players.change_status', uuid=player.uuid) }}" class="d-flex gap-2">
         <select name="status" class="ua-input" style="margin-bottom:0">
-            {% for value, label in [('active','Activo'), ('inactive','Inactivo'), ('suspended','Suspendido'), ('archived','Archivado'), ('banned','Baneado')] %}
+            {% for value, label in [('active','Activo'), ('inactive','Inactivo'), ('dormant','Dormido'), ('suspended','Suspendido'), ('archived','Archivado'), ('banned','Baneado')] %}
                 <option value="{{ value }}" {% if player.status == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
         </select>

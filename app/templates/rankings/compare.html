@@ -78,14 +78,14 @@
                 <span>{{ ((player_b.game_stats.distance_traveled_cm if player_b.game_stats else 0) / 100000) | round(1) }} km</span>
             </div>
             <div class="ua-compare-row">
-                <span>{{ player_a.last_seen.strftime('%d/%m/%Y') }}</span>
+                <span>{{ (player_a.last_seen | local).strftime('%d/%m/%Y') }}</span>
                 <span class="ua-compare-metric">Última conexión</span>
-                <span>{{ player_b.last_seen.strftime('%d/%m/%Y') }}</span>
+                <span>{{ (player_b.last_seen | local).strftime('%d/%m/%Y') }}</span>
             </div>
             <div class="ua-compare-row">
-                <span>{{ player_a.first_seen.strftime('%d/%m/%Y') }}</span>
+                <span>{{ (player_a.first_seen | local).strftime('%d/%m/%Y') }}</span>
                 <span class="ua-compare-metric">Primer ingreso</span>
-                <span>{{ player_b.first_seen.strftime('%d/%m/%Y') }}</span>
+                <span>{{ (player_b.first_seen | local).strftime('%d/%m/%Y') }}</span>
             </div>
         </div>
     </div>

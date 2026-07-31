@@ -12,7 +12,7 @@
     <div class="col-3">
         <select class="ua-input" style="margin-bottom:0" name="status">
             <option value="">Todos los estados</option>
-            {% for value, label in [('active','Activo'), ('inactive','Inactivo'), ('suspended','Suspendido'), ('archived','Archivado'), ('banned','Baneado')] %}
+            {% for value, label in [('active','Activo'), ('inactive','Inactivo'), ('dormant','Dormido'), ('suspended','Suspendido'), ('archived','Archivado'), ('banned','Baneado')] %}
                 <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
         </select>

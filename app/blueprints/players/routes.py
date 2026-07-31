@@ -79,7 +79,7 @@ def change_status(uuid: str):
 
     player = Player.query.get_or_404(uuid)
     new_status = request.form.get("status", "")
-    valid_statuses = {"active", "inactive", "suspended", "archived", "banned"}
+    valid_statuses = {"active", "inactive", "dormant", "suspended", "archived", "banned"}
     if new_status in valid_statuses and new_status != player.status:
         event_type = {
             "suspended": "suspended",

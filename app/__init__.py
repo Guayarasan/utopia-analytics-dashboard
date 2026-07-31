@@ -34,6 +34,14 @@ def create_app(config_class: type = Config) -> Flask:
     app.register_blueprint(rankings_bp, url_prefix="/rankings")
     app.register_blueprint(alerts_bp, url_prefix="/alerts")
 
+    from .utils.timezones import register_timezone_filter
+
+    register_timezone_filter(app)
+
+    from .scheduler import init_scheduler
+
+    init_scheduler(app)
+
     @app.cli.command("refresh-stats")
     def refresh_stats_command():
         """Recalcula rachas, Activity Score y global_stats_cache (cron)."""

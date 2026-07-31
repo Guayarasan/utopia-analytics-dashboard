@@ -64,7 +64,7 @@
                 {% for player in recent_connections %}
                     <div class="ua-list-row">
                         <a href="{{ url_for('players.profile', uuid=player.uuid) }}" class="ua-list-name">{{ player.username }}</a>
-                        <span class="ua-list-meta">{{ player.last_seen.strftime('%d/%m %H:%M') }}</span>
+                        <span class="ua-list-meta">{{ (player.last_seen | local).strftime('%d/%m %H:%M') }}</span>
                     </div>
                 {% else %}
                     <div class="ua-empty">Todavía no hay conexiones registradas.</div>
@@ -79,7 +79,7 @@
                 {% for player in recent_registrations %}
                     <div class="ua-list-row">
                         <a href="{{ url_for('players.profile', uuid=player.uuid) }}" class="ua-list-name">{{ player.username }}</a>
-                        <span class="ua-list-meta">{{ player.first_seen.strftime('%d/%m/%Y') }}</span>
+                        <span class="ua-list-meta">{{ (player.first_seen | local).strftime('%d/%m/%Y') }}</span>
                     </div>
                 {% else %}
                     <div class="ua-empty">Todavía no hay jugadores registrados.</div>
